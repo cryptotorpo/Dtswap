@@ -54,12 +54,12 @@ function Landing () {
           <div className='flex flex-col items-center justify-center h-full gap-10'>
             <div className='text-2xl font-medium'>Swap Tokens</div>
             <div className='flex flex-row items-center gap-5 text-lg font-medium'>
-              Address 1:<input type="text" className='p-1 border border-gray-800 rounded-xl w-[250px]' value={inAddress} onChange={setInAddress}></input>
-              Amount :<input type="text" className='p-1 border border-gray-800 rounded-xl w-[100px]' value={inAmount} onChange={setInAmount}></input>
+              Address 1:<input type="text" className='p-1 border border-gray-800 rounded-xl w-[250px]' value={inAddress} onChange={(e) => setInAddress(e.target.value)}></input>
+              Amount :<input type="text" className='p-1 border border-gray-800 rounded-xl w-[100px]' value={inAmount} onChange={(e) => setInAmount(e.target.value)}></input>
             </div>
             <div className='flex flex-row items-center gap-5 text-lg font-medium'>
-              Address 2:<input type="text" className='p-1 border border-gray-800 rounded-xl w-[250px]' value={outAddress} onChange={setOutAddress}></input>
-              Amount :<input disabled type="text" className='p-1 border border-gray-800 rounded-xl w-[100px]' value={outAmount} onChange={setOutAmount}></input>
+              Address 2:<input type="text" className='p-1 border border-gray-800 rounded-xl w-[250px]' value={outAddress} onChange={(e) => setOutAddress(e.target.value)}></input>
+              Amount :<input disabled type="text" className='p-1 border border-gray-800 rounded-xl w-[150px]' value={outAmount} onChange={(e) => setOutAmount(e.target.value)}></input>/ (10 ** 18)
             </div>
             <div className='flex flex-row gap-7'>
               <ConnectButton />
