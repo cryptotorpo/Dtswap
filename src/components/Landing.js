@@ -86,7 +86,7 @@ function Landing () {
             </div>
             <div className='flex flex-row items-center gap-5 text-lg font-medium'>
               To Address:<input type="text" className='p-1 border border-gray-800 rounded-xl w-[250px]' value={outAddress} onChange={(e) => setOutAddress(e.target.value)}></input>
-              AmountOut :<input disabled type="text" className='p-1 border border-gray-800 rounded-xl w-[150px]' value={outAmount} onChange={(e) => setOutAmount(e.target.value)}></input>/ (10 ** decimals)
+              AmountOut :<input disabled type="text" className='p-1 border border-gray-800 rounded-xl w-[150px]' value={outAmount} onChange={(e) => setOutAmount(e.target.value)}></input>
             </div>
             <div className='flex flex-row gap-7'>
               <ConnectButton />
