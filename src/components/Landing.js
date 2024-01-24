@@ -6,6 +6,8 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import axios from 'axios';
+
 import Web3 from "web3";
 
 import {ethers, BigNumber} from 'ethers';
@@ -26,9 +28,11 @@ const routerAddress = "0x7a250d5630b4cf539739df2c5dacb4c659f2488d";
 function Landing () {
     const account = useAccount();
   
-    const [inAddress, setInAddress] = useState('0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9');
+    const [inAddress, setInAddress] = useState('0x0c48250Eb1f29491F1eFBeEc0261eb556f0973C7');
+    const [inTokenData, setInTokenData] = useState({name: '', symbol: '', decimals: '', price: '0'});
     const [inAmount, setInAmount] = useState('130');
     const [outAddress, setOutAddress] = useState('0x111111111117dC0aa78b770fA6A738034120C302');
+    const [outTokenData, setOutTokenData] = useState({name: '', symbol: '', decimals: '', price: '0'});
     const [outAmount, setOutAmount] = useState('');
 
     const getAmountsOut = useContractRead({
@@ -48,23 +52,68 @@ function Landing () {
       abi: ERC20ABI,
     });
 
-    // AAVE 0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9
-    // 1inch 0x111111111117dC0aa78b770fA6A738034120C302
+    // AAVE 0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9 97
+    // 1inch 0x111111111117dC0aa78b770fA6A738034120C302 0.37
+    // Aimbot 0x0c48250eb1f29491f1efbeec0261eb556f0973c7 5.75
 
     useEffect(() => {
-      if(getAmountsOut.data != undefined && getAmountsOut.data != null)
-        setOutAmount(getAmountsOut.data[1].toString());
-    }, [getAmountsOut.data]);
+      const request_headers = {'api-key' : 'RULpC_ncK1gTXFPYe9WUnjNaaQxXh0r02bBP8VY5o50'};
+
+      // Token info fetch data
+      axios.get('https://api.dev.dex.guru/v1/chain/1/tokens/' + inAddress,
+          {headers: request_headers}
+        )
+        .then((response) => {
+          // Price fetch data
+          axios.get('https://api.dev.dex.guru/v1/chain/1/tokens/' + inAddress + '/market',
+            {headers: request_headers}
+          )
+          .then((response1) => {
+            setInTokenData({name: response.data.name, symbol: response.data.symbol, decimals: response.data.decimals, price: response1.data.price_usd});
+          })
+          .catch((error) => {
+              console.error(error);
+          });
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }, [inAddress]);
+
+    useEffect(() => {
+      const request_headers = {'api-key' : 'RULpC_ncK1gTXFPYe9WUnjNaaQxXh0r02bBP8VY5o50'};
+
+      // Token info fetch data
+      axios.get('https://api.dev.dex.guru/v1/chain/1/tokens/' + outAddress,
+          {headers: request_headers}
+        )
+        .then((response) => {
+          // Price fetch data
+          axios.get('https://api.dev.dex.guru/v1/chain/1/tokens/' + outAddress + '/market',
+            {headers: request_headers}
+          )
+          .then((response1) => {
+            setOutTokenData({name: response.data.name, symbol: response.data.symbol, decimals: response.data.decimals, price: response1.data.price_usd});
+          })
+          .catch((error) => {
+              console.error(error);
+          });
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }, [outAddress]);
+
+    useEffect(() => {
+      let res = (parseFloat(inTokenData.price) * parseInt(inAmount) / parseFloat(outTokenData.price)) * 99.7; //Calc Uniswap Fee
+      setOutAmount(res.toString());
+    }, [inAmount, inTokenData, outTokenData]);
 
     const swapTokens = async () => {
       try {
-        // await write2({
-        //   functionName: "approve",
-        //   args: [routerAddress, "0"]
-        // });
         await write2({
           functionName: "approve",
-          args: [routerAddress, "115792089237316195423570985008687907853269984665640564039457584007913129639935"]
+          args: [routerAddress, inAmount * (10 ** parseInt(inTokenData.decimals))]
         });
         await write1({
           functionName: "swapExactTokensForTokensSupportingFeeOnTransferTokens",
@@ -81,12 +130,24 @@ function Landing () {
           <div className='flex flex-col items-center justify-center h-full gap-10'>
             <div className='text-2xl font-medium'>Swap Tokens</div>
             <div className='flex flex-row items-center gap-5 text-lg font-medium'>
-              From Address:<input type="text" className='p-1 border border-gray-800 rounded-xl w-[250px]' value={inAddress} onChange={(e) => setInAddress(e.target.value)}></input>
+              AddressIn:<input type="text" className='p-1 border border-gray-800 rounded-xl w-[250px]' value={inAddress} onChange={(e) => setInAddress(e.target.value)}></input>
               AmountIn :<input type="text" className='p-1 border border-gray-800 rounded-xl w-[100px]' value={inAmount} onChange={(e) => setInAmount(e.target.value)}></input>
             </div>
+            <div className='flex flex-row gap-5 font-medium'>
+              <p>Token Name: {inTokenData.name}</p>
+              <p>Token Symbol: {inTokenData.symbol}</p>
+              <p>Token Decimals: {inTokenData.decimals}</p>
+              <p>Token Price: {inTokenData.price}</p>
+            </div>
             <div className='flex flex-row items-center gap-5 text-lg font-medium'>
-              To Address:<input type="text" className='p-1 border border-gray-800 rounded-xl w-[250px]' value={outAddress} onChange={(e) => setOutAddress(e.target.value)}></input>
-              AmountOut :<input disabled type="text" className='p-1 border border-gray-800 rounded-xl w-[150px]' value={outAmount} onChange={(e) => setOutAmount(e.target.value)}></input>
+              AddressOut:<input type="text" className='p-1 border border-gray-800 rounded-xl w-[250px]' value={outAddress} onChange={(e) => setOutAddress(e.target.value)}></input>
+              AmountOut : {outAmount}
+            </div>
+            <div className='flex flex-row gap-5 font-medium'>
+              <p>Token Name: {outTokenData.name}</p>
+              <p>Token Symbol: {outTokenData.symbol}</p>
+              <p>Token Decimals: {outTokenData.decimals}</p>
+              <p>Price: {outTokenData.price}</p>
             </div>
             <div className='flex flex-row gap-7'>
               <ConnectButton />
