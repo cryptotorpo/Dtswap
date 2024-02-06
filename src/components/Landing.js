@@ -23,15 +23,15 @@ import {
 import routerABI from './contractABI/uniswaprouter.json';
 import ERC20ABI from './contractABI/ERC20ABI.json';
 
-const routerAddress = "0x7a250d5630b4cf539739df2c5dacb4c659f2488d";
+const routerAddress = "0x05ff2b0db69458a0750badebc4f9e13add608c7f ";
 
 function Landing () {
     const account = useAccount();
   
-    const [inAddress, setInAddress] = useState('0x0c48250Eb1f29491F1eFBeEc0261eb556f0973C7');
+    const [inAddress, setInAddress] = useState('0x88b985007d714d1578bccdec2303212c14946cdc');
     const [inTokenData, setInTokenData] = useState({name: '', symbol: '', decimals: '', price: '0'});
     const [inAmount, setInAmount] = useState('130');
-    const [outAddress, setOutAddress] = useState('0x111111111117dC0aa78b770fA6A738034120C302');
+    const [outAddress, setOutAddress] = useState('0x111111111117dc0aa78b770fa6a738034120c302');
     const [outTokenData, setOutTokenData] = useState({name: '', symbol: '', decimals: '', price: '0'});
     const [outAmount, setOutAmount] = useState('');
 
@@ -60,12 +60,12 @@ function Landing () {
       const request_headers = {'api-key' : 'RULpC_ncK1gTXFPYe9WUnjNaaQxXh0r02bBP8VY5o50'};
 
       // Token info fetch data
-      axios.get('https://api.dev.dex.guru/v1/chain/1/tokens/' + inAddress,
+      axios.get('https://api.dev.dex.guru/v1/chain/56/tokens/' + inAddress,
           {headers: request_headers}
         )
         .then((response) => {
           // Price fetch data
-          axios.get('https://api.dev.dex.guru/v1/chain/1/tokens/' + inAddress + '/market',
+          axios.get('https://api.dev.dex.guru/v1/chain/56/tokens/' + inAddress + '/market',
             {headers: request_headers}
           )
           .then((response1) => {
@@ -75,7 +75,7 @@ function Landing () {
               console.error(error);
           });
         })
-        .catch((error) => {
+        .catch((error) => { 
             console.error(error);
         });
     }, [inAddress]);
@@ -84,12 +84,12 @@ function Landing () {
       const request_headers = {'api-key' : 'RULpC_ncK1gTXFPYe9WUnjNaaQxXh0r02bBP8VY5o50'};
 
       // Token info fetch data
-      axios.get('https://api.dev.dex.guru/v1/chain/1/tokens/' + outAddress,
+      axios.get('https://api.dev.dex.guru/v1/chain/56/tokens/' + outAddress,
           {headers: request_headers}
         )
         .then((response) => {
           // Price fetch data
-          axios.get('https://api.dev.dex.guru/v1/chain/1/tokens/' + outAddress + '/market',
+          axios.get('https://api.dev.dex.guru/v1/chain/56/tokens/' + outAddress + '/market',
             {headers: request_headers}
           )
           .then((response1) => {
